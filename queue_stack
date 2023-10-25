@@ -1,0 +1,385 @@
+int baseballScore(string ops){
+/*TODO*/
+    stack<int> st;
+    for(char c : ops) {
+        if (isdigit(c)){
+            int score = c - '0';
+            st.push(score);
+        }
+        else if (c == 'C'){
+            if(!st.empty()) st.pop();
+        }
+            
+        else if (c == 'D'){
+            if(!st.empty()){
+                int topScore = st.top();
+                st.push(topScore*2);
+            }
+        }
+        else if (c == '+'){
+            if (st.size() >= 2) {
+                int lastScore = st.top();
+                stack<int> tmp = st;
+                tmp.pop();
+                int secondLastScore = tmp.top();
+                int newScore = lastScore + secondLastScore;
+                st.push(newScore);
+            }
+        }
+    }
+    int totalScore = 0;
+    while (!st.empty()) {
+        totalScore += st.top();
+        st.pop();
+    }
+
+    return totalScore;
+}
+
+void push(T item) {
+    // TODO: Push new element into the top of the stack
+    list.add(item);
+}
+
+T pop() {
+    // TODO: Remove an element on top of the stack
+    return list.removeAt(list.size() - 1);
+}
+
+T top() {
+    // TODO: Get value of the element on top of the stack
+    return list.get(list.size() - 1); 
+}
+
+bool empty() {
+    // TODO: Determine if the stack is empty
+    return list.empty();
+}
+
+int size() {
+    // TODO: Get the size of the stack
+    return list.size();    
+}
+
+void clear() {
+    // TODO: Clear all elements of the stack
+    list.clear();
+}
+
+
+vector<int> nextGreater(vector<int>& arr){
+    int n = arr.size();
+    vector<int> res(n, -1);  
+    stack<int> s;
+    for (int i = n - 1; i >= 0; i--){
+        while(!s.empty() && s.top() <= arr[i]) s.pop();
+        res[i] = s.empty() ? -1 : s.top();
+        s.push(arr[i]);
+    }
+    return res;
+}
+
+
+int evaluatePostfix(string expr){
+    /*TODO*/
+    stack<int> st;
+    for(int i = 0; i < (int) expr.size(); i++){
+        if(isdigit(expr[i])){
+            int num = 0;
+            while(isdigit(expr[i])){
+                num = num*10 + (int)(expr[i] - '0');
+                i++;
+            }
+            i--;
+            st.push(num);
+        }
+        else if (expr[i] == ' ') continue;
+        else{
+            int value1 = st.top(); st.pop();
+            int value2 = st.top(); st.pop();
+            switch(expr[i]){
+            case '+': 
+                st.push(value2+value1); break;
+            case '-':
+                st.push(value2-value1); break;
+            case '*':
+                st.push(value2*value1); break;
+            case '/':
+                st.push(value2/value1);break;
+            }
+        }
+    }
+    return st.top();
+}
+
+
+bool canEatFood(int maze[5][5], int fx, int fy){
+    /*TODO*/
+    stack<node> st;
+    
+    node res(0,0);
+    st.push(res);
+    
+    int sol[5][5];
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            sol[i][j] = 0;
+        }
+    }
+    
+    int dx[4] = {-1, 0, 1, 0};
+    int dy[4] = {0, -1, 0, 1};
+    
+    while(!st.empty()){
+        node temp = st.top();
+        st.pop();
+        
+        if(sol[temp.x][temp.y] == 0) {
+            sol[temp.x][temp.y] = 1;
+        
+            if (temp.x == fx && temp.y == fy) return true;
+            
+            for(int k = 0; k < 4; k++) {
+                int x = temp.x + dx[k];
+                int y = temp.y + dy[k];
+                if(x >= 0 && y >= 0 && x < 5 && y < 5 && sol[x][y] == 0 && maze[x][y] == 1){
+                    node curr(x,y);
+                    st.push(curr);
+                }
+            }
+        }
+    }
+    return false;
+}
+
+
+
+string removeDuplicates(string S){
+    stack<char> st;
+    for(char c : S){
+        if(!st.empty() && st.top() == c) st.pop();
+        else st.push(c);
+    }
+    string res;
+    while(!st.empty()){
+        res = st.top() + res;
+        st.pop();
+    }
+    return res;
+}
+
+
+vector<int> stock_span(const vector<int>& ns) {
+    stack<int> st;
+    int n = ns.size();
+    st.push(0);
+    
+    vector<int> res(n);
+    res[0] = 1;
+    
+    for(int i = 1; i < n; i++){
+        while(!st.empty() && ns[st.top()] < ns[i]) st.pop();
+        int span = (st.empty()) ? (i + 1): (i - st.top());
+        res[i] = span;
+        st.push(i);
+    }
+    return res;
+}
+
+
+bool isValidParentheses (string s){
+    stack<char> st;
+    for (char c : s) {
+        if(c == '(' || c == '[' || c == '{') st.push(c);
+        else{
+            if(st.empty()) return false;
+            char top = st.top(); st.pop();
+            if ((c == ')' && top != '(') || (c == ']' && top != '[')
+                || (c == '}' && top != '{'))
+                return false;
+        }
+    }
+    return st.empty();
+}
+
+
+QUEUE
+void interleaveQueue(queue<int>& q){
+    stack<int> st; stack<int> st2;
+    int half = q.size() / 2;
+    // Ex 11 12 13 14 15 16 17 18 19 20
+    // get half element of queue to push to stack
+    // queue 15 16 17 18 19 20      stack 15(T) 14 13 12 11
+    // make a new stack stack2 to get the reverse of st
+    // queue 15 16 17 18 19 20      stack2 11(T) 12 13 14 15
+
+    for(int i = 0; i < half; i++){
+        st.push(q.front()); q.pop();
+    }
+    
+    while(!st.empty()){
+        st2.push(st.top()); st.pop();
+    }
+    
+    while (!st2.empty()) {
+        q.push(st2.top()); st2.pop();
+        q.push(q.front()); q.pop();
+    }
+}
+
+
+bool isBipartite(vector<vector<int>> graph) {
+    int nodes = graph.size();
+    vector<int> color(nodes, -1);
+    for(int start = 0; start < nodes; start++){
+        if(color[start] == -1){
+            queue<int> q;
+            q.push(start);
+            color[start] = 0;
+            
+            while(!q.empty()){
+                int curr = q.front(); q.pop();
+                for(int adj : graph[curr]){
+                    if (color[adj] == -1){
+                        color[adj] = 1 - color[curr];
+                        q.push(adj);
+                    }
+                    else if(color[adj] == color[curr]) return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+
+void bfs(vector<vector<int>> graph, int start) {
+	int nodes = graph.size();
+	vector<bool> visited(nodes, false);
+	queue<int> q;
+	
+	visited[start] = true;
+	q.push(start);
+	
+	while(!q.empty()){
+	    int curr = q.front(); q.pop();
+	    
+	    cout << curr << ' ';
+	    
+	    for(int adj : graph[curr]){
+	        if(!visited[adj]) {
+	            visited[adj] = true;
+	            q.push(adj);
+	        }
+	    }
+	}
+}
+
+
+void push(T item) {
+    // TODO: Push new element into the end of the queue
+    list.add(item);
+}
+
+T pop() {
+    // TODO: Remove an element in the head of the queue
+    T item = list.get(0);
+    list.removeAt(0);
+    return item;
+}
+
+T top() {
+    // TODO: Get value of the element in the head of the queue
+    return list.get(0);    
+}
+
+bool empty() {
+    // TODO: Determine if the queue is empty
+    return list.empty();    
+}
+
+int size() {
+    // TODO: Get the size of the queue
+    return list.size();    
+}
+
+void clear() {
+    // TODO: Clear all elements of the queue
+    list.clear(); 
+}
+
+
+// iostream, vector and queue are included
+// You can write helper methods
+
+long long nthNiceNumber(int n) {
+    queue<long long> q;
+    q.push(2); q.push(5);
+    for(int i = 0; i < n - 1; i++){
+        long long curr = q.front(); q.pop();
+        
+        q.push(curr*10 + 2);
+        q.push(curr*10 + 5);
+    }
+    return q.front();
+}
+
+
+// iostream, vector and queue are included
+// Hint: use breadth-first-search
+
+int secondsToBeRotten(vector<vector<int>>& grid) {
+    int n = grid.size(); int m = grid[0].size();
+    int freshA = 0, time = -1;
+    
+    vector<vector<int>> directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    queue<pair<int, int>> rottenA;
+    
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < m; j++){
+            if(grid[i][j] == 2){
+               rottenA.push({i,j}); 
+            }
+            else if(grid[i][j] == 1){
+                freshA++;
+            }
+        }
+    }
+    
+    if(freshA == 0) return 0;
+    
+    while(!rottenA.empty()){
+        int size = rottenA.size();
+        for (int i = 0; i < size; i++) {
+            pair<int, int> curr = rottenA.front(); rottenA.pop();
+            for(auto dir : directions){
+                int x = curr.first + dir[0];
+                int y = curr.second + dir[1];
+                if (x >= 0 && x < n && y >= 0 && y < m && grid[x][y] == 1) {
+                        grid[x][y] = 2;
+                        rottenA.push({x, y});
+                        freshA--;
+                    }
+            }
+        }
+        time++;
+    }
+    return (freshA == 0) ? time : -1;
+}
+
+
+int sumOfMaxSubarray(vector<int>& nums, int k) {
+    int n = nums.size();
+    int res = 0;
+    deque<int> maxElements;
+    for(int i = 0; i < n; i++){
+        while (!maxElements.empty() && maxElements.front() < i - k + 1)
+            maxElements.pop_front();
+        while (!maxElements.empty() && nums[i] >= nums[maxElements.back()])
+            maxElements.pop_back();
+        maxElements.push_back(i);
+        if (i >= k - 1)
+            res += nums[maxElements.front()];
+    }
+    return res;
+}
